@@ -1,48 +1,40 @@
 import { Entity } from "./entity";
-import { STATUS, TypeOfInteration, NodeType } from "./models";
+import { STATUS, TypeOfInteration, NodeType, PlayerSkills, QuestTask } from "./models";
 import { v4 as uuidv4 } from "uuid";
-import { Dialogue } from "./dialogue";
 
-export class Task {
+export class Task implements QuestTask {
   id: string;
   status: STATUS;
   description: string = "Questo è un task TODO";
+
+  // l'idea è di avere punti 1) generali 2)per singola skill del giocatore
+  rewards: PlayerSkills /* = {
+    "skill1": 1,
+    "skill2": 1
+  }; */
 
   constructor(
     public key: string, // è il name
     public entity: Entity, // entità con cui si interagisce
     public typeOfInteration: TypeOfInteration,
-    public type: NodeType = NodeType.NODE,
-    public points: number = 10, // punti guadagnati dal singolo task
-    public dialogue?: Dialogue
+    public type: NodeType = NodeType.NODE
   ) {
     this.id = uuidv4();
     this.status = STATUS.NOT_YET_STARTED;
-    this.linkTaskToEntity(entity, typeOfInteration);
   }
 
-  private linkTaskToEntity(
-    entity: Entity,
-    typeOfInteration: TypeOfInteration,
-    dialogue?: Dialogue
-  ) {
-    this.entity = entity;
-    this.entity.registerTaskAssociation(this.id, typeOfInteration);
-    if (dialogue) {
-      this.dialogue = dialogue;
-    }
+  get isCompleted(): boolean {
+    return this.status === STATUS.COMPLETED;
   }
 
-  checkIfComplete() {
+  checkIfCompleted() {
     if (this.status === STATUS.RUNNING) {
-      if (this.typeOfInteration === TypeOfInteration.DIALOGUE) {
-        return (
-          this.dialogue && this.dialogue.checkIfDialogueIsCompleted(this.id)
-        );
-      } else {
-        return this.entity.checkIfTaskIteractionIsComplete(this.id);
-      }
+      return this.isCompleted;
     }
-    return false;
+  }
+
+  // TODO: SERVE ?????
+  onComplete(): void {
+    console.log(`Task "${this.key}" completato.`);
   }
 }

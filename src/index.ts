@@ -2,7 +2,6 @@ import "reflect-metadata";
 import { Task } from "./task";
 import { Entity } from "./entity";
 import { Quest } from "./Quest";
-import { Dialogue } from "./dialogue";
 import { QuestsManager } from "./QuestsManager";
 import { TypeOfInteration, NodeType } from "./models";
 
@@ -23,8 +22,7 @@ g.addNode(
     "task2",
     new Entity("Actor2"),
     TypeOfInteration.GATHER,
-    NodeType.NODE,
-    20
+    NodeType.NODE
   )
 );
 g.addNode(
@@ -32,10 +30,7 @@ g.addNode(
     "task3",
     new Entity("Actor3"),
     TypeOfInteration.DIALOGUE,
-    NodeType.NODE,
-    16,
-    new Dialogue()
-  )
+    NodeType.NODE)
 );
 g.addNode(new Task("task4", new Entity("Actor4"), TypeOfInteration.GATHER));
 g.addNode(
@@ -46,8 +41,7 @@ g.addNode(
     "task6",
     new Entity("Actor6"),
     TypeOfInteration.GATHER,
-    NodeType.NODE,
-    16
+    NodeType.NODE
   )
 );
 
@@ -65,8 +59,7 @@ g.log();
 
 const qm = new QuestsManager();
 qm.add(g);
-qm.selectActiveQuest(g.id);
-qm.startAciveQuest();
+qm.addToActiveQuests(g.id);
 
 qm.update();
 qm.update();
@@ -92,4 +85,4 @@ qm.update();
 
 console.log("All Nodes: ", g.nodes);
 // console.log("Nodes PATH to success: ", g.path);
-console.log("History: ", qm.history);
+console.log("History: ", qm.completedQuests);

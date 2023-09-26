@@ -42,13 +42,6 @@ export class Graph<T extends Task | DialogueNode> {
       }, [])
       .map((key) => this.findNode(key));
   }
-  // solo un nodo precedente
-  getPrevious(key: string): T {
-    let prevKey = Array.from(this.edges.values()).find(
-      ({ start, end }) => end === key
-    ).key;
-    return this.findNode(prevKey);
-  }
 
   /* ---------------- UTILITY ---------------- */
   log() {
