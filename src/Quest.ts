@@ -1,4 +1,4 @@
-import { Task } from "./task";
+import { Task } from "./Task";
 import { QuestsManager } from "./QuestsManager";
 import { QuestRequirements, STATUS } from "./models";
 import { NodeType } from "./models";
@@ -53,14 +53,14 @@ export class Quest extends Graph<Task> {
         const currentTask = this.currentNodes[i];
         // console.log(currentTask);
         if (currentTask.type === NodeType.END) {
-          currentTask.status = STATUS.COMPLETED;
+          currentTask.setStatus(STATUS.COMPLETED);
           this.completedTasks.push(currentTask);
           this.status = STATUS.COMPLETED;
           this.onQuestCompleted()
           break;
         }
         if (currentTask.checkIfCompleted()) {
-          currentTask.status = STATUS.COMPLETED;
+          currentTask.setStatus(STATUS.COMPLETED);
           this.completedTasks.push(currentTask);
           this.currentNodes = this.getNext(currentTask.key);
           this.setTasksStatus(STATUS.RUNNING);
@@ -78,11 +78,9 @@ export class Quest extends Graph<Task> {
  */
   private setTasksStatus(status: STATUS): void {
     this.currentNodes.forEach((element) => {
-      element.status = status;
+      element.setStatus(status);
     });
   }
-
-
 
   onQuestCompleted() {
     this.manager.calculateReward(this);

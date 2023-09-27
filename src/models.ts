@@ -1,6 +1,6 @@
 export enum TypeOfInteration {
   FIGHT = "FIGHT",
-  GATHER = "GATHER",
+  COLLECT = "COLLECT",
   DIALOGUE = "DIALOGUE",
   ESCORT = "ESCORT",
   DELIVERY = "DELIVERY"
@@ -29,7 +29,6 @@ export type PlayerSkills = {
 // Interfaccia per i task
 export interface QuestTask {
   checkIfCompleted(): boolean;
-  onComplete(): void;
 }
 
 export type QuestRequirements = {

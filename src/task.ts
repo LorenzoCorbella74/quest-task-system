@@ -4,23 +4,28 @@ import { v4 as uuidv4 } from "uuid";
 
 export class Task implements QuestTask {
   id: string;
-  status: STATUS;
-  description: string = "Questo è un task TODO";
+  private status: STATUS;
 
-  // l'idea è di avere punti 1) generali 2)per singola skill del giocatore
-  rewards: PlayerSkills /* = {
+  // l'idea è di avere punti da aggiungere per singola skill del giocatore
+  /*rewards: PlayerSkills  = {
     "skill1": 1,
     "skill2": 1
   }; */
 
   constructor(
-    public key: string, // è il name
+    public type: NodeType = NodeType.NODE,
+    public key: string,         // è il name
+    public description: string,  // description
     public entity: Entity, // entità con cui si interagisce
     public typeOfInteration: TypeOfInteration,
-    public type: NodeType = NodeType.NODE
+    public rewards: PlayerSkills = {}
   ) {
     this.id = uuidv4();
     this.status = STATUS.NOT_YET_STARTED;
+  }
+
+  setStatus(status: STATUS) {
+    this.status = status;
   }
 
   get isCompleted(): boolean {
@@ -28,13 +33,6 @@ export class Task implements QuestTask {
   }
 
   checkIfCompleted() {
-    if (this.status === STATUS.RUNNING) {
-      return this.isCompleted;
-    }
-  }
-
-  // TODO: SERVE ?????
-  onComplete(): void {
-    console.log(`Task "${this.key}" completato.`);
+    return this.isCompleted;
   }
 }

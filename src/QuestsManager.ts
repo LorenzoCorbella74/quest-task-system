@@ -4,7 +4,7 @@ import { STATUS } from "./models";
 export class QuestsManager {
   quests: { [key: string]: Quest } = {};                      // dictionary di tutte le quest
   completedQuests: { [key: string]: Partial<Quest> } = {};    // dictionary di quest completate
-  cancelledQuests: { [key: string]: Partial<Quest> } = {};    // dictionary di quest cacellate
+  cancelledQuests: { [key: string]: Partial<Quest> } = {};    // dictionary di quest cacellate TODO
   activeQuests: Quest[] = [];
 
   add(quest: Quest) {

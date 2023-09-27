@@ -1,7 +1,6 @@
-import { DialogueNode } from "./dialogue";
-import { Task } from "./task";
+import { Task } from "./Task";
 
-export class Graph<T extends Task | DialogueNode> {
+export class Graph<T extends Task> {
   nodes: T[];
   edges: Map<string, { start: string; end: string }>; // collegamenti tra task
 
@@ -12,6 +11,10 @@ export class Graph<T extends Task | DialogueNode> {
 
   addNode(task: T) {
     this.nodes.push(task);
+  }
+
+  updateNode(task: T) {
+    this.nodes = this.nodes.map((n) => (n.key === task.key ? task : n));
   }
 
   removeNode(key: string) {
@@ -44,7 +47,7 @@ export class Graph<T extends Task | DialogueNode> {
   }
 
   /* ---------------- UTILITY ---------------- */
-  log() {
+  logEdges() {
     console.log("Edges: ", Array.from(this.edges.keys()));
   }
 }

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Task } from "./task";
+import { Task } from "./Task";
 import { Entity } from "./entity";
 import { Quest } from "./Quest";
 import { QuestsManager } from "./QuestsManager";
