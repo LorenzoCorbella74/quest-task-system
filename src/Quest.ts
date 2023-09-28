@@ -1,19 +1,24 @@
 import { Task } from "./Task";
 import { QuestsManager } from "./QuestsManager";
-import { QuestRequirements, STATUS } from "./models";
+import { PossibleTasks, QuestRequirements, STATUS, TypeOfInteration } from "./models";
 import { NodeType } from "./models";
 import { Graph } from "./Graph";
+import { CollectTask } from "./tasks/collect";
+import { DeliveryTask } from "./tasks/delivery";
+import { DialogueTask } from "./tasks/dialogue";
+import { EscortTask } from "./tasks/escort";
+import { Entity } from "./entity";
 
 /**
  * Gestisce la singola quest:
  * - generazione dei suoi task
  * - controllo del suo stato
  */
-export class Quest extends Graph<Task> {
+export class Quest extends Graph<PossibleTasks> {
   private _id: string;
-  currentNodes: Task[] = [];
+  currentNodes: PossibleTasks[] = [];
   status: STATUS = STATUS.BLOCKED;  // stato della quest
-  completedTasks: Task[] = [];      // path di task eseguiti con successo
+  completedTasks: PossibleTasks[] = [];      // path di task eseguiti con successo
   manager: QuestsManager;
 
   requirements: {
@@ -41,6 +46,43 @@ export class Quest extends Graph<Task> {
     this.setTasksStatus(STATUS.RUNNING);
   }
 
+  /** 
+   * TODO:
+   * Controlla se il giocatore sta interagendo con una entity
+   * e tale entity è la stessa entity del task
+  */
+  playerIsInteractingWith(entity: Entity): boolean {
+    return true;
+  }
+
+  checkInteractions() {
+    for (let id = 0; id < this.currentNodes.length; id++) {
+      const task = this.currentNodes[id];
+      if (this.playerIsInteractingWith(task.entity)) {
+        if (task.typeOfInteration === TypeOfInteration.COLLECT) {
+          (task as CollectTask).wasFound = true
+        }
+        if (task.typeOfInteration === TypeOfInteration.DELIVERY) {
+          // TODO: si deve controllare che l'entità interagisce con il player
+          // ma anche che si possiede l'oggetto da consegnare
+          (task as DeliveryTask).wasDelivered = true
+        }
+        if (task.typeOfInteration === TypeOfInteration.ESCORT) {
+          // TODO: si controlla se l'entità ha raggiunto la destinazione
+          (task as EscortTask).wasEscorted = true
+        }
+        if (task.typeOfInteration === TypeOfInteration.DIALOGUE) {
+          // dipende dalle scelte dell'utente che
+          // setta wasCompleted a true
+        }
+        if (task.typeOfInteration === TypeOfInteration.FIGHT) {
+          // dipende dalla hp dell'entity
+        }
+        this.checkNodes();
+      }
+    }
+  }
+
   /**
  * Check the nodes and perform necessary actions based on the node status.
  *
@@ -52,19 +94,17 @@ export class Quest extends Graph<Task> {
       for (let i = 0; i < this.currentNodes.length; i++) {
         const currentTask = this.currentNodes[i];
         // console.log(currentTask);
-        if (currentTask.type === NodeType.END) {
-          currentTask.setStatus(STATUS.COMPLETED);
-          this.completedTasks.push(currentTask);
-          this.status = STATUS.COMPLETED;
-          this.onQuestCompleted()
-          break;
-        }
         if (currentTask.checkIfCompleted()) {
           currentTask.setStatus(STATUS.COMPLETED);
           this.completedTasks.push(currentTask);
-          this.currentNodes = this.getNext(currentTask.key);
-          this.setTasksStatus(STATUS.RUNNING);
-          break;
+          if (currentTask.type === NodeType.END) {
+            this.status = STATUS.COMPLETED;
+            this.onQuestCompleted()
+            break;
+          } else {
+            this.currentNodes = this.getNext(currentTask.key);
+            this.setTasksStatus(STATUS.RUNNING);
+          }
         }
       }
     }

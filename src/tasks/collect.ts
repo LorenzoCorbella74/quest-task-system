@@ -1,8 +1,10 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { NodeType, TypeOfInteration, STATUS } from "../models";
+import { NodeType, TypeOfInteration } from "../models";
 
 export class CollectTask extends Task {
+
+    wasFound: boolean = false
 
     constructor(
         type: NodeType,
@@ -14,9 +16,6 @@ export class CollectTask extends Task {
     }
 
     checkIfCompleted() {
-        if (this.entity['wasFound']) {
-            this.setStatus(STATUS.COMPLETED);
-        }
-        return super.checkIfCompleted()
+        return this.wasFound
     }
 }

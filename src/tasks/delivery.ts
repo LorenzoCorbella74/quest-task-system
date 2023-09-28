@@ -1,8 +1,10 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { NodeType, TypeOfInteration, STATUS } from "../models";
+import { NodeType, TypeOfInteration } from "../models";
 
 export class DeliveryTask extends Task {
+
+    wasDelivered: boolean = false;
     constructor(
         type: NodeType,
         name: string,
@@ -14,9 +16,6 @@ export class DeliveryTask extends Task {
     }
 
     checkIfCompleted() {
-        if (this.object['wasDelivered']) {
-            this.setStatus(STATUS.COMPLETED);
-        }
-        return super.checkIfCompleted()
+        return this.wasDelivered
     }
 }

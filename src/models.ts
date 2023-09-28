@@ -1,3 +1,9 @@
+import { CollectTask } from "./tasks/collect";
+import { DeliveryTask } from "./tasks/delivery";
+import { DialogueTask } from "./tasks/dialogue";
+import { EscortTask } from "./tasks/escort";
+import { KillTask } from "./tasks/fight";
+
 export enum TypeOfInteration {
   FIGHT = "FIGHT",
   COLLECT = "COLLECT",
@@ -35,3 +41,6 @@ export type QuestRequirements = {
   questId: string,
   taskId: string
 }
+
+
+export type PossibleTasks = CollectTask | EscortTask | DialogueTask | DeliveryTask | KillTask 

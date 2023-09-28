@@ -24,10 +24,19 @@ export class DialogOption {
   ) { }
 }
 
+
+/* 
+  Si completa quando l'utente esce dal dialogo o quando si seleziona una opzione di dialogo
+  avente un onChoose che NON setta lo stato del task a completato (per quello ci pensa la Quest)
+  ma setta il flag wasCompleted a true
+*/
+
 export class DialogueTask extends Task {
 
   private currentNode: Question;
   private history: Question[] = [];
+
+  wasCompleted: boolean = false;
 
   constructor(
     type: NodeType,
@@ -78,15 +87,6 @@ export class DialogueTask extends Task {
     this.currentNode = this.rootNode;
     this.history = [];
   }
-
-
-  /* 
-  
-    Finisce quando l'utente esce dal dialogo o quando si seleziona una opzione di dialogo
-    avente un onChoose che setta lo stato del task a completato
-  
-  */
-
 }
 
 

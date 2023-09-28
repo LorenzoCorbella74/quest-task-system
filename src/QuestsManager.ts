@@ -25,7 +25,7 @@ export class QuestsManager {
   }
 
   /**
-   *  L'idea è controllare tutte le quest in stato RUNNING e non soltanto quella attiva ???? NO
+   *  L'idea è controllare tutte le quest in stato RUNNING e non soltanto quella attiva -> SIIIII
    *  -> il player con le sue azioni influisce solo sulla quest attiva  quindi non ci sarà
    *  modifiche alle altre quest. Se nei task avviene qualcosa quando si deve "ricalcolare"
    * gli effetti sui task di altre quest ???? quando il task è completato?. E'un singolo task
@@ -37,7 +37,7 @@ export class QuestsManager {
   update() {
     for (let i = 0; i < this.activeQuests.length; i++) {
       const activeQuest = this.activeQuests[i];
-      activeQuest.checkNodes();
+      activeQuest.checkInteractions();
     }
   }
 

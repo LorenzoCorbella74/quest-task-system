@@ -1,6 +1,6 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { NodeType, STATUS, TypeOfInteration } from "../models";
+import { NodeType, TypeOfInteration } from "../models";
 
 export class KillTask extends Task {
 
@@ -14,10 +14,7 @@ export class KillTask extends Task {
     }
 
     checkIfCompleted() {
-        if (this.entity['health'] <= 0) {
-            this.setStatus(STATUS.COMPLETED);
-        }
-        return super.checkIfCompleted()
+        return this.entity['health'] <= 0
     }
 
 }
