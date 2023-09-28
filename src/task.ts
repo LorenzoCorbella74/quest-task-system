@@ -1,5 +1,5 @@
 import { Entity } from "./entity";
-import { STATUS, TypeOfInteration, NodeType, PlayerSkills, QuestTask } from "./models";
+import { STATUS, TypeOfInteration, NodeType, PlayerSkills, QuestTask, FlowType } from "./models";
 import { v4 as uuidv4 } from "uuid";
 
 export class Task implements QuestTask {
@@ -16,9 +16,11 @@ export class Task implements QuestTask {
     public type: NodeType = NodeType.NODE,
     public key: string,         // è il name
     public description: string,  // description
+    // public descriptionAfterCompletion:string, // description dopo che il task è stato completato
     public entity: Entity, // entità con cui si interagisce
     public typeOfInteration: TypeOfInteration,
-    public rewards: PlayerSkills = {}
+    public rewards: PlayerSkills = {},
+    public flow: FlowType = 'POSITIVE'
   ) {
     this.id = uuidv4();
     this.status = STATUS.NOT_YET_STARTED;
@@ -28,11 +30,12 @@ export class Task implements QuestTask {
     this.status = status;
   }
 
-  get isCompleted(): boolean {
-    return this.status === STATUS.COMPLETED;
+  checkIfCompletedSuccesfully() {
+    return this.status === STATUS.COMPLETED_WITH_SUCCESS;
   }
 
-  checkIfCompleted() {
-    return this.isCompleted;
+  checkIfCompletedWithFailure() {
+    return this.status === STATUS.COMPLETED_WITH_FAILURE;
   }
+
 }

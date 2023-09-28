@@ -1,6 +1,6 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { NodeType, TypeOfInteration } from "../models";
+import { FlowType, NodeType, PlayerSkills, STATUS, TypeOfInteration } from "../models";
 
 export class DeliveryTask extends Task {
 
@@ -10,12 +10,17 @@ export class DeliveryTask extends Task {
         name: string,
         description: string,
         entity: Entity,
-        public object: Entity // l'item da consegnare ad "entity"
+        public object: Entity,// l'item da consegnare ad "entity"
+        public rewards: PlayerSkills = {},
+        public flow: FlowType = 'POSITIVE'
     ) {
-        super(type, name, description, entity, TypeOfInteration.DELIVERY);
+        super(type, name, description, entity, TypeOfInteration.DELIVERY, rewards, flow);
     }
 
-    checkIfCompleted() {
-        return this.wasDelivered
+    checkIfCompletedSuccesfully() {
+        if (this.wasDelivered) {
+            this.setStatus(STATUS.COMPLETED_WITH_SUCCESS);
+        }
+        return super.checkIfCompletedSuccesfully()
     }
 }

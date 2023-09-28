@@ -1,39 +1,46 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { TypeOfInteration, NodeType, STATUS } from "../models";
+import { TypeOfInteration, NodeType, STATUS, FlowType, PlayerSkills } from "../models";
 
+/**
+ * Il testo che viene mostrato dovpo aver scelto una opzione
+ */
 export class Answer {
-  // TODO: oltre al testo ci può essere il file audio...
+  options: null = null;
   constructor(public text: string) { }
 }
 
+/**
+ * Mostra la domanda (ma può essere vuota) e tutte le opzioni di dialogo
+ */
 export class Question {
+  constructor(public text: string | null, public options: DialogOption[] = []) { }
+}
+
+/**
+ * Una opzione di dialogo può contenere a sua volta un'altra domanda o una risposta o anche niente (che esegue una funzione di output)
+ * 
+ */
+export class DialogOption {
   wasChosen: boolean = false;
 
   constructor(
-    public text: string,
-    public options: DialogOption[] = []
-  ) { }
-}
-
-export class DialogOption {
-  constructor(
-    public text: string,
-    public question: Question,
-    public onChoose?: (context: ThisType<Task>) => void
+    public text: string,  // Opzione che appare a video
+    public question: Question | Answer | null,
+    public onOptionSelected?: (context: ThisType<DialogueTask>) => void
   ) { }
 }
 
 
 /* 
   Si completa quando l'utente esce dal dialogo o quando si seleziona una opzione di dialogo
-  avente un onChoose che NON setta lo stato del task a completato (per quello ci pensa la Quest)
-  ma setta il flag wasCompleted a true
+  avente un onOptionSelected che NON setta lo stato del task a completato (per quello ci pensa la Quest)
+  ma setta il flag del TASK wasCompleted a true
 */
 
 export class DialogueTask extends Task {
 
-  private currentNode: Question;
+  private currentNode: Question | Answer | null;
   private history: Question[] = [];
 
   wasCompleted: boolean = false;
@@ -43,24 +50,39 @@ export class DialogueTask extends Task {
     name: string,
     description: string,
     entity: Entity,
+    public rewards: PlayerSkills = {},
+    public flow: FlowType = 'POSITIVE',
     private rootNode: Question
   ) {
-    super(type, name, description, entity, TypeOfInteration.DIALOGUE);
+    super(type, name, description, entity, TypeOfInteration.DIALOGUE, rewards, flow);
     this.currentNode = rootNode;
   }
 
-  getCurrentNode(): Question {
+  getCurrentNode(): Question | Answer | null {
     return this.currentNode;
   }
 
+  getHistory() {
+    return this.history;
+  }
+
+  isDialogueQuestion(
+    node: Question | Answer | null
+  ): node is Question {
+    return node instanceof Question;
+  }
+
   chooseOption(optionIndex: number): void {
-    const chosenOption = this.currentNode.options[optionIndex];
-    if (chosenOption) {
-      if (chosenOption.onChoose) {
-        chosenOption.onChoose(this); // Esegui l'evento onChoose se presente
+    if (this.currentNode && this.isDialogueQuestion(this.currentNode)) {
+      const chosenOption = this.currentNode?.options[optionIndex];
+      if (chosenOption) {
+        chosenOption.wasChosen = true;
+        if (chosenOption.onOptionSelected) {
+          chosenOption.onOptionSelected(this);  // si passa tutto il task
+        }
+        this.history.push(this.currentNode);
+        this.currentNode = chosenOption.question;
       }
-      this.history.push(this.currentNode);
-      this.currentNode = chosenOption.question;
     }
   }
 
@@ -76,12 +98,17 @@ export class DialogueTask extends Task {
     this.history = [];
   }
 
-  forceExit(): void {
+  forceExit(status: STATUS): void {
     this.currentNode = null;
     this.history = [];
-    this.setStatus(STATUS.COMPLETED);
+    this.setStatus(status);
   }
 
+  /**
+   * Dall'esterno si può decidere di cambiare un dialogo 
+   * a seguito dell'esito di altri task/quest
+   * @param newRootNode 
+   */
   changeDialogTree(newRootNode: Question): void {
     this.rootNode = newRootNode;
     this.currentNode = this.rootNode;
@@ -93,6 +120,9 @@ export class DialogueTask extends Task {
 /*
 
 Esempio di applicazione:
+
+https://stackblitz.com/edit/stackblitz-starters-q5mvq2?file=src%2Fmain.ts
+
 
 // Creare gli oggetti Answer e Question
 const question1 = new Question("Cosa vuoi fare?", [
@@ -126,7 +156,7 @@ console.log(dialogTree.getCurrentNode().text); // Output: "Hai acquistato una sp
 dialogTree.returnToPreviousQuestion();
 console.log(dialogTree.getCurrentNode().text); // Output: "Cosa vuoi fare?"
 
-// Esegui l'evento onChoose per l'opzione "Torna indietro"
+// Esegui l'evento onOptionSelected per l'opzione "Torna indietro"
 dialogTree.chooseOption(1); // Scegli "Torna indietro"
 
 // Uscire forzatamente dal dialogo

@@ -21,7 +21,7 @@ export class QuestsManager {
   }
 
   removeFromActiveQuests(questId: string) {
-    this.activeQuests.filter(quest => quest.id !== questId);
+    this.activeQuests = this.activeQuests.filter(quest => quest.id !== questId);
   }
 
   /**

@@ -9,14 +9,18 @@ export enum TypeOfInteration {
   COLLECT = "COLLECT",
   DIALOGUE = "DIALOGUE",
   ESCORT = "ESCORT",
-  DELIVERY = "DELIVERY"
+  DELIVERY = "DELIVERY",
+  BUILD = "BUILD",
+  HACK = "HACK"
 }
 
+// for QUEST & TASK
 export enum STATUS {
   "BLOCKED" = "BLOCKED",
   "NOT_YET_STARTED" = "NOT_YET_STARTED",
   "RUNNING" = "RUNNING",
-  "COMPLETED" = "COMPLETED",
+  "COMPLETED_WITH_SUCCESS" = "COMPLETED_WITH_SUCCESS",
+  "COMPLETED_WITH_FAILURE" = "COMPLETED_WITH_FAILURE",
   "CANCELLED" = "CANCELLED"
 }
 
@@ -27,6 +31,8 @@ export enum NodeType {
   "END" = "END"
 }
 
+export type FlowType = 'POSITIVE' | 'NEGATIVE';
+
 // write a list of skills for a player
 export type PlayerSkills = {
   [key: string]: number
@@ -34,7 +40,7 @@ export type PlayerSkills = {
 
 // Interfaccia per i task
 export interface QuestTask {
-  checkIfCompleted(): boolean;
+  checkIfCompletedSuccesfully(): boolean;
 }
 
 export type QuestRequirements = {
@@ -43,4 +49,4 @@ export type QuestRequirements = {
 }
 
 
-export type PossibleTasks = CollectTask | EscortTask | DialogueTask | DeliveryTask | KillTask 
+export type PossibleTasks = CollectTask | EscortTask | DialogueTask | DeliveryTask | KillTask // TODO: other tasks...

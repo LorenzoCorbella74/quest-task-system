@@ -1,6 +1,6 @@
 import { Task } from "../Task";
 import { Entity } from "../entity";
-import { NodeType, TypeOfInteration } from "../models";
+import { FlowType, NodeType, PlayerSkills, STATUS, TypeOfInteration } from "../models";
 
 export class EscortTask extends Task {
     wasEscorted: boolean = false;
@@ -9,12 +9,16 @@ export class EscortTask extends Task {
         name: string,
         description: string,
         entity: Entity,
+        public rewards: PlayerSkills = {},
+        public flow: FlowType = 'POSITIVE',
         public location: { x: number; y: number }
     ) {
-        super(type, name, description, entity, TypeOfInteration.ESCORT);
+        super(type, name, description, entity, TypeOfInteration.ESCORT, rewards, flow);
     }
-
-    checkIfCompleted() {
-        return this.wasEscorted;
+    checkIfCompletedSuccesfully() {
+        if (this.wasEscorted) {
+            this.setStatus(STATUS.COMPLETED_WITH_SUCCESS);
+        }
+        return super.checkIfCompletedSuccesfully()
     }
 }

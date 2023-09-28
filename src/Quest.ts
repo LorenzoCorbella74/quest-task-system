@@ -86,25 +86,29 @@ export class Quest extends Graph<PossibleTasks> {
   /**
  * Check the nodes and perform necessary actions based on the node status.
  *
- * @return {void} This function does not return a value.
  */
-  checkNodes() {
-    if (this.status === STATUS.COMPLETED) return;
+  checkNodes(): void {
+    if (this.status === STATUS.COMPLETED_WITH_SUCCESS) return;
     if (this.status === STATUS.RUNNING) {
       for (let i = 0; i < this.currentNodes.length; i++) {
         const currentTask = this.currentNodes[i];
         // console.log(currentTask);
-        if (currentTask.checkIfCompleted()) {
-          currentTask.setStatus(STATUS.COMPLETED);
+        if (currentTask.checkIfCompletedSuccesfully()) {
           this.completedTasks.push(currentTask);
           if (currentTask.type === NodeType.END) {
-            this.status = STATUS.COMPLETED;
+            this.status = STATUS.COMPLETED_WITH_SUCCESS;
             this.onQuestCompleted()
             break;
           } else {
-            this.currentNodes = this.getNext(currentTask.key);
+            this.currentNodes = this.getNext(currentTask.key).filter(task => task.flow === "POSITIVE");
             this.setTasksStatus(STATUS.RUNNING);
           }
+        }
+        if (currentTask.checkIfCompletedWithFailure()) {
+          // facciamo che il task che può fallire non può mai essere l'ultimo task
+          // e che la quest può essere completata anche se dei task sono falliti
+          this.currentNodes = this.getNext(currentTask.key).filter(task => task.flow === "NEGATIVE");
+          this.setTasksStatus(STATUS.RUNNING);
         }
       }
     }
