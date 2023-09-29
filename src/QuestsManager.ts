@@ -2,9 +2,9 @@ import { Quest } from "./Quest";
 import { STATUS } from "./models";
 
 export class QuestsManager {
-  quests: { [key: string]: Quest } = {};                      // dictionary di tutte le quest
-  completedQuests: { [key: string]: Partial<Quest> } = {};    // dictionary di quest completate
-  cancelledQuests: { [key: string]: Partial<Quest> } = {};    // dictionary di quest cacellate TODO
+
+  quests: { [key: string]: Quest } = {};                     // tutte le quest
+  completedQuests: { [key: string]: Partial<Quest> } = {};   // tutte le quest completate
   activeQuests: Quest[] = [];
 
   add(quest: Quest) {
@@ -15,8 +15,9 @@ export class QuestsManager {
     quest.manager = this;
   }
 
+
   addToActiveQuests(questId: string) {
-    this.quests[questId].start();
+    this.quests[questId].start(); // si mette la quest a RUNNING
     this.activeQuests.push(this.quests[questId]);
   }
 
@@ -37,7 +38,7 @@ export class QuestsManager {
   update() {
     for (let i = 0; i < this.activeQuests.length; i++) {
       const activeQuest = this.activeQuests[i];
-      activeQuest.checkInteractions();
+      activeQuest.checkIfCompleted();
     }
   }
 
@@ -48,12 +49,12 @@ export class QuestsManager {
     this.removeFromActiveQuests(quest.id);
   }
 
-  manageOtherQuestsIfRequirementsAreMet(quest: Quest) {
+  updateOtherQuestsIfRequirementsAreMet(quest: Quest) {
     for (const questId in this.quests) {
       if (Object.prototype.hasOwnProperty.call(this.quests, questId)) {
         const quest = this.quests[questId];
         if (quest.requirements.toUnblock.questId === quest.id) {
-          quest.status = STATUS.NOT_YET_STARTED;
+          quest.status = STATUS.NOT_YET_STARTED; // cioè non bloccate 
         }
         let completedTasksIds = quest.completedTasks.map(task => task.id);
         if (completedTasksIds.includes(quest.requirements.toUnblock.taskId)) {
@@ -83,6 +84,5 @@ export class QuestsManager {
     }, {}); // TODO: qua ci dovrebbe essere un dizionario di skill del player
     return total;
   }
-
 
 }

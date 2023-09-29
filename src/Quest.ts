@@ -40,6 +40,11 @@ export class Quest extends Graph<PossibleTasks> {
     this._id = str.replace(/ /g, "_");
   }
 
+  override addNode(task: PossibleTasks) {
+    this.nodes.push(task);
+    task.quest = this;
+  }
+
   start() {
     this.status = STATUS.RUNNING;
     this.currentNodes[0] = this.nodes.find((x) => x.type === NodeType.START);
@@ -55,7 +60,7 @@ export class Quest extends Graph<PossibleTasks> {
     return true;
   }
 
-  checkInteractions() {
+  checkIfCompleted() {
     for (let id = 0; id < this.currentNodes.length; id++) {
       const task = this.currentNodes[id];
       if (this.playerIsInteractingWith(task.entity)) {
@@ -129,6 +134,6 @@ export class Quest extends Graph<PossibleTasks> {
   onQuestCompleted() {
     this.manager.calculateReward(this);
     this.manager.putCompletedQuestInHistory(this);
-    this.manager.manageOtherQuestsIfRequirementsAreMet(this);
+    this.manager.updateOtherQuestsIfRequirementsAreMet(this);
   }
 }

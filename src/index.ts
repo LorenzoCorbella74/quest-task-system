@@ -55,7 +55,7 @@ g.addEdge("task6", "task5");
 
 // console.log("Nodes", g.nodes);
 // console.log("Edges", g.edges);
-g.log();
+g.logEdges();
 
 const qm = new QuestsManager();
 qm.add(g);
